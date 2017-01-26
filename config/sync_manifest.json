@@ -1,0 +1,54 @@
+{
+  "comment_1": "This file is a json manifest of files to sync to other rails git repos",
+  "comment_2": "Assumptions - all git checkouts for the organizations are in a single",
+  "comment_3": "directory and only relative pathing is used assuming Rails.root at the",
+  "comment_4": "base",
+  "comment_5": "All comment_ json elements will be discarded",
+  "comment_6": "execute manifest with bundle exec rake sync:copy_manifest",
+
+  
+  "files":{
+    "lib/tasks/sync.rake":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/db.rb":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/login.rb":[
+        "../hyde_web"],
+    "db/migrate/20170123070515_create_logins.rb": [
+      "../hyde_web"],
+      "app/models/url_common.rb":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/text_common.rb":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/time_common.rb":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/blog_analyzer.rb":[
+      "../hyde_web",
+      "../hyde_api_ruby",
+      "../hyde_admin",
+      "../hyde_worker"],
+    "app/models/user.rb":[
+      "../hyde_web",
+      "../hyde_worker"],      
+    "app/views/shared/_spacer.html.erb":[
+      "../hyde_web"],
+    "app/views/layouts/_footer.html.erb":[
+      "../hyde_web",
+      "../hyde_admin"]   
+    }
+}
