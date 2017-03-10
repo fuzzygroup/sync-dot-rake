@@ -42,9 +42,26 @@ namespace :sync do
     
     sync_manifest["files"].each do |json_source, json_targets|
       json_targets.each do |json_target|
-        source = File.join(Rails.root, json_source)
-        target = File.join(json_target, json_source)
-        cp_command = "cp #{source} #{target}"
+        original_json_source = json_source
+        source_file = File.join(Rails.root, json_source)
+        #
+        # Extension for handling wildcards 
+        #
+        if json_source =~ /\*/
+          #
+          # Example:
+          # app/models/page_*.rb
+          #
+          parts = original_json_source.split(/\/[^\/]*$/)
+          # generates a command like this
+          # cp /Users/sjohnson/Dropbox/fuzzygroup/hyde/hyde_web/app/models/page_*.rb ../hyde_page_parser/app/models
+          
+          target = File.join(json_target, parts[0])
+          #debugger
+        else
+          target = File.join(json_target, json_source)
+        end
+        cp_command = "cp #{source_file} #{target}"
         if 3 == 3 #should_copy?(source, target)
           puts "  #{cp_command}"
           `#{cp_command}`
