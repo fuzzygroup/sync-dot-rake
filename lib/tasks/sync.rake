@@ -47,7 +47,9 @@ namespace :sync do
         #
         # Extension for handling wildcards 
         #
+        wildcard_copy = false
         if json_source =~ /\*/
+          wildcard_copy = true
           #
           # Example:
           # app/models/page_*.rb
@@ -60,6 +62,11 @@ namespace :sync do
           #debugger
         else
           target = File.join(json_target, json_source)
+        end
+        if wildcard_copy == false
+          # compare diffs
+          # not copy if changes
+        else
         end
         cp_command = "cp #{source_file} #{target}"
         if 3 == 3 #should_copy?(source, target)
