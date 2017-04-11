@@ -2,6 +2,54 @@ namespace :sync do
   
   require 'digest/sha1'
   
+
+  
+  # bundle exec rake sync:list_manifests --trace
+  desc "List all manifests"
+  task :list_manifests do
+    manifests = get_manifests
+    
+    puts "Manifests exist here:"
+    puts "==============================================================="
+    manifests.each do |manifest|
+      puts manifest
+    end
+  end
+  
+  # bundle exec rake sync:search_manifests search=user.rb
+  desc "Search manifests"
+  task :search_manifests do
+    search_q = ENV['search']
+    manifests = get_manifests
+    
+    search_hits = []
+    
+    manifests.each do |manifest|
+      json_manifest = File.read(manifest)
+      json = JSON.parse(json_manifest)
+      
+      files_to_sync = json["files"]
+      
+      files_to_sync.keys.each do |file_to_sync_key|
+        #debugger
+        #if search_q =~ /#{file_to_sync_key}/
+        if file_to_sync_key.include?(search_q)
+          search_hits << manifest
+        end
+      end
+    end
+    
+    if search_hits.empty?
+      puts "There are no results for: #{search_q} in any manifest"
+    else
+      puts "The file: #{search_q} is found in the following manifests:"
+
+      search_hits.each do |search_hit|
+        puts search_hit
+      end
+    end
+  end
+  
   # bundle exec rake sync:validate_json_manifest --trace
   desc "validate json manifest"
   task :validate_json_manifest do
@@ -47,9 +95,7 @@ namespace :sync do
         #
         # Extension for handling wildcards 
         #
-        wildcard_copy = false
         if json_source =~ /\*/
-          wildcard_copy = true
           #
           # Example:
           # app/models/page_*.rb
@@ -63,11 +109,6 @@ namespace :sync do
         else
           target = File.join(json_target, json_source)
         end
-        if wildcard_copy == false
-          # compare diffs
-          # not copy if changes
-        else
-        end
         cp_command = "cp #{source_file} #{target}"
         if 3 == 3 #should_copy?(source, target)
           puts "  #{cp_command}"
@@ -77,5 +118,30 @@ namespace :sync do
         end
       end
     end
+  end
+  
+  def get_manifests
+    current_path = Rails.root
+    parts = current_path.to_s.split("/")
+    base_path = []
+    parts.each_with_index do |part, ctr|
+      next if ctr == parts.size - 1
+      base_path << part
+    end
+    base_dir_path = base_path.join('/')
+    
+    #sub_directories = 
+    
+    sub_directories=Dir["#{base_dir_path}/*"].reject{|o| not File.directory?(o)}
+    #debugger
+    manifests = []
+    sub_directories.each do |sub_directory|
+      possible_manifest_file = File.join(sub_directory, "config/sync_manifest.json")
+      #debugger
+      if File.exists?(possible_manifest_file)
+        manifests << possible_manifest_file
+      end 
+    end
+    return manifests
   end
 end
